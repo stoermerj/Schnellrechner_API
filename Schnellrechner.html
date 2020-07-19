@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+    integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+  <title>Fetch API Test</title>
+</head>
+
+<body>
+  <script>
+    //The goal of this script is to have a quick calculator for insurance products
+
+    //shows if product has a vsh eigenschaden
+    function showVshEigenschaden() {
+      let findList = document.getElementById("vhEigenschaden");
+      if ((document.getElementById('produktAuswahlListe').value == "IT") || (document.getElementById('produktAuswahlListe').value == "MAC")) {
+        findList.style.display = "block";
+      } else {
+        findList.style.display = "none";
+      }
+    }
+
+    //shows if product has DOinterimsmanager 
+    function showDoInterimsmanager() {
+      let findList = document.getElementById("doInterimsmanagerconsult");
+      if (document.getElementById('produktAuswahlListe').value == "MAN") {
+        findList.style.display = "block";
+      } else {
+        findList.style.display = "none";
+      }
+    }
+
+    //shows the VS Box for DO
+    function addDoInterimsmanagerVS() {
+      let findModul = document.getElementById("zusatzInterimsmanager");
+      if (document.getElementById("doInterimsmanagerJa").checked) {
+        findModul.style.display = "block";
+      } else {
+        findModul.style.display = "none";
+      }
+    }
+
+    //provides user option if/he she wants additional modules
+    function addModules() {
+      let findModul = document.getElementById("zusatzModuleList");
+      if (document.getElementById("zusatzModuleJa").checked) {
+        findModul.style.display = "block";
+      } else if (document.getElementById("zusatzModuleNein").checked) {
+        findModul.style.display = "none";
+      }
+    }
+
+    //checked bhvmodul
+    function bhvCheck() {
+      if (document.getElementById('bhvModul').checked) {
+        document.getElementById('zusatzModulBhv').style.display = "block";
+      } else if (document.getElementById('bhvModul').checked == false) {
+        document.getElementById('zusatzModulBhv').style.display = "none";
+      }
+    }
+
+    //checked sachCheck
+    function sachCheck() {
+      if (document.getElementById('sachModul').checked) {
+        document.getElementById('zusatzModulSach').style.display = "block";
+      } else if (document.getElementById('sachModul').checked == false) {
+        document.getElementById('zusatzModulSach').style.display = "none";
+      }
+    }
+
+    //checked cyberCheck
+    function cyberCheck() {
+      if (document.getElementById('cyberModul').checked) {
+        document.getElementById('zusatzModulCyber').style.display = "block";
+      } else if (document.getElementById('cyberModul').checked == false) {
+        document.getElementById('zusatzModulCyber').style.display = "none";
+      }
+    }
+
+    //everything that should be loaded when dom is fired
+    document.addEventListener('DOMContentLoaded', function () {
+
+      showDoInterimsmanager();
+      showVshEigenschaden();
+
+      //everything that should be loaded when submit button is clicked
+      document.getElementById('submit').onclick = function () {
+
+        //pushes NET IT vsh eigenschaden into API
+        function addVshEigenschaden() {
+          if (document.getElementById("vshEigenschaedenJa").checked && document.getElementById('produktAuswahlListe').value == "IT") { return "Ja"; }
+          else if (document.getElementById("vshEigenschaedenNein").checked) { return "Nein"; }
+        }
+
+        //pushes Marketing & Advertising berufshaftpflich
+        function addVshBerufshaftpflicht() {
+          if (document.getElementById("vshEigenschaedenJa").checked && document.getElementById('produktAuswahlListe').value == "MAC") { return "Ja"; }
+          else if (document.getElementById("vshEigenschaedenNein").checked) { return "Nein"; }
+        }
+
+        //consult D&O into API
+        function doInterimsmanager() {
+          if (document.getElementById("doInterimsmanagerJa").checked) {
+            if (document.getElementById("doInterinsmanagerAuswahl").value > 0) {
+              return document.getElementById("doInterinsmanagerAuswahl").value
+            }
+            else if (parseInt(document.getElementById("doInterinsmanagerAuswahl").value) > document.getElementById("versicherungssumme").value || parseInt(document.getElementById("doInterinsmanagerAuswahl").value) > 500000) {
+              errorMessage(document.getElementById("zusatzInterimsmanager"));
+            }
+            else { return "x" }
+          }
+        }
+
+        //defines the API input for the Betriebshaftpflicht Module
+        let bhvModule = function () {
+          let bhvValue = document.getElementById('bhvInputVs').value
+          if (parseInt(bhvValue) > 0 && parseInt(bhvValue) <= 3000000) {
+            return "3000000";
+          }
+          else if (parseInt(bhvValue) > 3000000 && parseInt(bhvValue) <= 5000000) {
+            return "5000000";
+          }
+          else if (parseInt(bhvValue) > 5000000 && parseInt(bhvValue) <= 10000000) {
+            return "10000000";
+          }
+          else if (parseInt(bhvValue) > 10000000) {
+            errorMessage(document.getElementById('zusatzModulCyber'));
+          }
+          else { return "x"; }
+        }
+
+        //defines the API input for the Sach Module
+        let sachModule = function () {
+          let sachValue = document.getElementById('sachInputVs').value
+          if (document.getElementById('produktAuswahlListe').value === "IT" && parseInt(document.getElementById('jahresumsatz').value) <= 250000) {
+            return moduleExceptions(document.getElementById('sachInputVs').value);
+          }
+          else {
+            if (parseInt(sachValue) > 0 && parseInt(sachValue) <= 25000) {
+              return "25000";
+            }
+            else if (parseInt(sachValue) > 25000 && parseInt(sachValue) <= 50000) {
+              return "50000";
+            }
+            else if (parseInt(sachValue) > 50000 && parseInt(sachValue) <= 75000) {
+              return "75000";
+            }
+            else if (parseInt(sachValue) > 75000) {
+              errorMessage(document.getElementById('zusatzModulSach'));
+            }
+            else { return "x"; }
+          }
+        }
+
+        //defines the API input for the Cyber Module 
+        let cyberModule = function () {
+          let errorMessageCyber = document.getElementById('zusatzModulCyber');
+          let cyberValue = document.getElementById('cyberInputVs').value
+          if (parseInt(cyberValue) <= 250000) {
+            if (document.getElementById('produktAuswahlListe').value === "IT" && parseInt(document.getElementById('jahresumsatz').value) <= 250000) {
+              if (parseInt(cyberValue) <= 100000) {
+                return "100000";
+              }
+              else if (parseInt(cyberValue) > 100000) {
+                console.log("this doesn't work");
+                errorMessage(errorMessageCyber);
+                return "x";
+              }
+            }
+            else { return "250000" };
+          }
+          else if (parseInt(cyberValue) > 250000) {
+            errorMessage(errorMessageCyber);
+          }
+          else { return "x" }
+        }
+
+        //if NET IT is small for Sach
+        let moduleExceptions = function (e) {
+          if (parseInt(e) > 0 && parseInt(e) <= 15000) {
+            return "15000";
+          }
+          else if (parseInt(e) > 15000 && parseInt(e) <= 25000) {
+            return "25000";
+          }
+          else {
+            errorMessage(document.getElementById('zusatzModulSach'));
+            return "x"
+          }
+        }
+
+        //addons for cyber + sach
+        let moduleAddonsCyber = function () {
+          if (document.getElementById("cyberInputZusatzModul").checked) {
+            return "Ja";
+          } else if ((document.getElementById("cyberInputZusatzModul").checked) = false) {
+            return "Nein";
+          }
+        }
+        let moduleAddonsSachBetriebsunterbrechung = function () {
+          if (document.getElementById("sachInputZusatzBetriebsunterbrecung").checked) {
+            return "Ja";
+          } else if ((document.getElementById("sachInputZusatzBetriebsunterbrecung").checked) = false) {
+            return "Nein";
+          }
+        }
+        let moduleAddonsSachGlas = function () {
+          if (document.getElementById("sachInputZusatzGlas").checked) {
+            return "Ja";
+          } else if ((document.getElementById("sachInputZusatzGlas").checked) = false) {
+            return "Nein";
+          }
+        }
+
+        //creates error messages. Missing: Clear everything once submit is hit
+        let errorMessage = function (e) {
+          if (document.getElementById("error") == null) {
+            e.insertAdjacentHTML('afterend', '<span id="error" class="row alert alert-danger">Ihre Versicherungssumme ist zu hoch!</span>');
+          }
+        }
+
+        //add thumpsup once button is toggled or checked - ERROR
+        function togglelike(e) {
+          let element = document.getElementById("e");
+          element.classList.toggle("hinzugefügt");
+        }
+
+        //doesn't fire form as is standard
+        const myForm = document.getElementById("myForm");
+        myForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+        })
+
+        const url = 'https://eppp2.antragsmodelle-hiscox.de/api/eppp/v1/calculate';
+        let data = [{
+          "auth_user": "", //enter Authentification
+          "auth_apikey": "", //enter Password
+          "product_code": document.getElementById('produktAuswahlListe').value,
+          "annual_turnover": document.getElementById('jahresumsatz').value,
+          "vsh_module": document.getElementById('versicherungssumme').value,
+          "vsh_addon_eigenschaeden": addVshEigenschaden(),
+          "vsh_addon_berufshaftpflicht": addVshBerufshaftpflicht(),
+          "vsh_addon_interimsmanager": doInterimsmanager(),
+          "bhv_module": bhvModule(),
+          "sach_module": sachModule(),
+          "sach_addon_betriebsunterbrechung": moduleAddonsSachBetriebsunterbrechung(),
+          "sach_addon_glasversicherung": moduleAddonsSachGlas(),
+          "cyber_module": cyberModule(),
+          "cyber_addon_betriebsunterbrechung": moduleAddonsCyber(),
+
+        }]
+
+        let fetchData = {
+          mode: 'cors',
+          method: 'POST',
+          body: JSON.stringify(data[0]),
+          headers: {
+            "Accept": "application/json, text/javascript, */*; q=0.01",
+            "Content-Type": "application/json",
+          }
+        }
+        fetch(url, fetchData)
+
+          .then(response => response.json())
+          .then(data => {
+            if (JSON.stringify(data.data.totals.price_net) == 0 || JSON.stringify(data.data.totals.price_gross) == 0) {
+              document.getElementById('netto').innerHTML = "There was an error";
+              document.getElementById('brutto').innerHTML = "There was an error";
+            }
+            else {
+              document.getElementById('netto').innerHTML = JSON.stringify(data.data.totals.price_net);
+              document.getElementById('brutto').innerHTML = JSON.stringify(data.data.totals.price_gross);
+            }
+          })
+      }
+    })
+
+  </script>
+  <style>
+    .demo-content {
+      padding: 15px;
+      border-radius: 3px;
+      font-size: 18px;
+      background-color: white;
+      border: 1px solid #01b3e0;
+
+    }
+
+    .finalCTAs {
+      padding: 30px;
+      font-size: 18px;
+      background-color: dbdfe5;
+      margin-top: 30px;
+
+    }
+
+    .price {
+      font-size: 18px;
+      padding: 15px;
+      font-weight: bold;
+      color: black;
+    }
+
+    .hinzugefügt {
+      background-color: green;
+    }
+
+    .indpadding {
+      padding: 5px;
+    }
+  </style>
+  <div class="container-fluid">
+    <div class="row justify-content-center">
+      <h1>Schnellrechner</h1>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-sm-2"></div>
+      <div class="col-sm-8 demo-content">
+        <form id="myForm">
+          <ul id="myul">
+            <div class="row indpadding">
+              <div class="col-sm-6">
+                <label>Produktauswahl</label>
+              </div>
+              <div class="col-sm-6 form-group">
+                <select id="produktAuswahlListe" class="form-control"
+                  onchange="showVshEigenschaden(), showDoInterimsmanager()">
+                  <option id="produktAuswahl" value="keine" name="keine">Produkt wählen</option>
+                  <option id="it" value="IT" name="IT">IT</option>
+                  <option id="marketing" value="MAC" name="MAC">Marketing & Advertising</option>
+                  <option id="consult" value="MAN" name="MAN">Consult</option>
+                  <option id="professions" value="PROF" name="PROF">Professions</option>
+                  <option id="berufsbetreuer" value="BBE" name="BBE">Berufsbetreuer</option>
+                  <option id="immobilienmakler" value="IMM" name="IMM">Immobilienmakler</option>
+                  <option id="übersetzer" value="USE" name="USE">Übersetzer</option>
+                </select>
+              </div>
+            </div>
+            <div class="row indpadding">
+              <div class="col-sm-6">
+                <label for="jahresumsatz">Jahresumsatz</label>
+              </div>
+              <div class="col-sm-6 form-group">
+                <input id="jahresumsatz" type="text" class="form-control">
+              </div>
+            </div>
+            <div class="row indpadding">
+              <div class="col-sm-12">Basis-Modul: Berufshaftpflicht</div>
+            </div>
+            <div class="row indpadding" id="versicherungssummeEingabe">
+              <div class="col-sm-6">
+                <label for="versicherungssumme">Versicherungssumme</label>
+              </div>
+              <div class="col-sm-6 form-group">
+                <input id="versicherungssumme" type="text" class="form-control">
+              </div>
+            </div>
+            <div id="vhEigenschaden">
+              <div class="row indpadding">
+                <div class="col-sm-6">
+                  <label>Eigenschäden hinzubuchen:</label>
+                </div>
+                <div class="col-sm-6">
+                  <div class="btn-group btn-group-toggle btn-default btn-block" data-toggle="buttons">
+                    <label class="btn btn-secondary">
+                      <input type="radio" id="vshEigenschaedenJa" value="yes" name="vhEigenschadenHinzu">Ja</input>
+                    </label>
+                    <label class="btn btn-secondary active">
+                      <input type="radio" id="vshEigenschaedenNein" value="no" name="vhEigenschadenHinzu"
+                        checked>Nein</input>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="doInterimsmanagerconsult">
+              <div class="row indpadding">
+                <div class="col-sm-6">
+                  <label>D&O Interimsmanager hinzubuchen:</label>
+                </div>
+                <div class="col-sm-6">
+                  <div class="btn-group btn-group-toggle btn-default btn-block" data-toggle="buttons">
+                    <label class="btn btn-secondary">
+                      <input type="radio" id="doInterimsmanagerJa" value="yes" name="doInterimsmanagerHinzu"
+                        onclick="addDoInterimsmanagerVS()">Ja</input>
+                    </label>
+                    <label class="btn btn-secondary active">
+                      <input type="radio" id="doInterimsmanagerNein" value="no" name="doInterimsmanagerHinzu"
+                        onclick="addDoInterimsmanagerVS()" checked>Nein</input>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="zusatzInterimsmanager" style="display:none">
+              <div class="row indpadding">
+                <div class="col-sm-6">
+                  <label>Entschädigungsgrenzen</label>
+                </div>
+                <div class="col-sm-6 form-group">
+                  <select id="doInterinsmanagerAuswahl" class="form-control">
+                    <option id="low" value="100000" name="100000">100000</option>
+                    <option id="medium" value="250000" name="250000">250000</option>
+                    <option id="high" value="500000" name="500000">500000</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div id="zusatzModule">
+              <div class="row indpadding">
+                <div class="col-sm-6">
+                  <label>Zusatz-Module hinzubuchen:</label>
+                </div>
+                <div class="col-sm-6">
+                  <div class="btn-group btn-group-toggle btn-default btn-block" data-toggle="buttons">
+                    <label class="btn btn-secondary">
+                      <input type="radio" id="zusatzModuleJa" value="yes" name="zusatzModulHinzu"
+                        onclick="addModules()">Ja</input>
+                    </label>
+                    <label class="btn btn-secondary active">
+                      <input type="radio" id="zusatzModuleNein" value="no" name="zusatzModulHinzu"
+                        onclick="addModules()" checked>Nein</input>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div id="zusatzModuleList" style="display:none">
+                <div class="row indpadding">
+                  <div class="col-sm-6">
+                    <label for="bhvModul">Betriebshaftpflicht</label>
+                  </div>
+                  <! –– this needs fixing with togglelike ––>
+                    <div class="col-sm-6 btn-group btn-group-toggle btn-default btn-block" data-toggle="buttons"
+                      id="module1">
+                      <label class="btn btn-secondary">
+                        <input type="checkbox" id="bhvModul" name="bhvModul" value="bhvModul"
+                          onclick="bhvCheck(); togglelike(module1)">Hinzufügen</input>
+                      </label>
+                    </div>
+                </div>
+                <div id="zusatzModulBhv" style="display:none">
+                  <div class="row indpadding">
+                    <div class="col-sm-6">
+                      <label for="bhvInputVs">Versicherungssumme</label>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                      <input id="bhvInputVs" type="text" class="form-control">
+                    </div>
+                  </div>
+                </div>
+                <div class="row indpadding">
+                  <div class="col-sm-6">
+                    <label for="cyberModul">Cyber</label>
+                  </div>
+                  <div class="col-sm-6 btn-group btn-group-toggle btn-default btn-block" data-toggle="buttons">
+                    <label class="btn btn-secondary">
+                      <input type="checkbox" id="cyberModul" name="cyberModul" value="cyberModul"
+                        onclick="cyberCheck()">Hinzufügen</label>
+                    </label>
+                  </div>
+                </div>
+                <div id="zusatzModulCyber" style="display:none">
+                  <div class="row indpadding">
+                    <div class="col-sm-6">
+                      <label for="cyberInputVs">Versicherungssumme</label>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                      <input id="cyberInputVs" type="text" class="form-control">
+                    </div>
+                  </div>
+                  <div class="row indpadding">
+                    <div class="col-sm-6">
+                      <label for="cyberInputZusatzModul">Zusatz-Baustein Betriebsunterbrechung</label>
+                    </div>
+                    <div class="col-sm-6 btn-group btn-group-toggle btn-default btn-block" data-toggle="buttons">
+                      <label class="btn btn-secondary">
+                        <input id="cyberInputZusatzModul" type="checkbox" name="cyberInputZusatzModul"
+                          value="cyberInputZusatzModul">Hinzufügen</input>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="row indpadding">
+                  <div class="col-sm-6">
+                    <label for="sachModul">Sach</label>
+                  </div>
+                  <div class="col-sm-6 btn-group btn-group-toggle btn-default btn-block" data-toggle="buttons">
+                    <label class="btn btn-secondary">
+                      <input type="checkbox" id="sachModul" name="sachModul" value="sachModul"
+                        onclick="sachCheck()">Hinzufügen</input>
+                    </label>
+                  </div>
+                </div>
+                <div id="zusatzModulSach" style="display:none">
+                  <div class="row indpadding">
+                    <div class="col-sm-6">
+                      <label for="sachInputVs">Versicherungssumme</label>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                      <input id="sachInputVs" type="text" class="form-control">
+                    </div>
+                  </div>
+                  <div class="row indpadding">
+                    <div class="col-sm-6">
+                      <label for="sachInputZusatzBetriebsunterbrecung">Zusatz-Baustein Betriebsunterbrechung</label>
+                    </div>
+                    <div class="col-sm-6 btn-group btn-group-toggle btn-default btn-block" data-toggle="buttons">
+                      <label class="btn btn-secondary">
+                        <input id="sachInputZusatzBetriebsunterbrecung" type="checkbox"
+                          name="sachInputZusatzBetriebsunterbrecung"
+                          value="sachInputZusatzBetriebsunterbrecung">Hinzufügen</input>
+                      </label>
+                    </div>
+                  </div>
+                  <div class="row indpadding">
+                    <div class="col-sm-6">
+                      <label for="sachInputZusatzGlas">Zusatz-Baustein Glas</label>
+                    </div>
+                    <div class="col-sm-6 btn-group btn-group-toggle btn-default btn-block" data-toggle="buttons">
+                      <label class="btn btn-secondary">
+                        <input id="sachInputZusatzGlas" type="checkbox" name="sachInputZusatzGlas"
+                          value="sachInputZusatzGlas">Hinzufügen</input>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row finalCTAs">
+              <div class="col-sm-6">
+                <button id="submit" class="btn btn-success btn-default btn-block">Submit</button>
+              </div>
+              <div class="col-sm-6">
+                <button type="reset" value="Reset" class="btn btn-warning btn-default btn-block"
+                  onclick="document.location.reload()">Reset</button>
+              </div>
+            </div>
+          </ul>
+        </form>
+      </div>
+      <div class="col-sm-2"></div>
+    </div>
+    <div class="row justify-content-center">
+
+      <div class="col-sm-3 demo-content price mt-1 ml-1 mr-1">
+        <div>Netto: €
+          <div id="netto" for="netto">
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-3 demo-content price mt-1 ml-1 mr-1">
+        <div>Brutto: €
+          <div id="brutto" for="brutto">
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+    integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
