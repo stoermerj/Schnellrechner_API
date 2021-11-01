@@ -247,8 +247,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const url = 'https://makler.hiscox.de/api/eppp/v1/calculate';
         const data = {
-            "auth_user": "49", //enter Authentification
-            "auth_apikey": "111222", //enter Password
+            "auth_user": "", //enter Authentification
+            "auth_apikey": "", //enter Password
             "product_code": document.getElementById('produktAuswahlListe').value,
             "annual_turnover": document.getElementById('jahresumsatz').value,
             "vsh_module": document.getElementById('versicherungssumme').value,
