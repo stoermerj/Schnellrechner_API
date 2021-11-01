@@ -1,0 +1,31 @@
+.demo-content {
+    padding: 15px;
+    border-radius: 3px;
+    font-size: 18px;
+    background-color: white;
+    border: 1px solid #01b3e0;
+
+  }
+
+  .finalCTAs {
+    padding: 30px;
+    font-size: 18px;
+    background-color: dbdfe5;
+    margin-top: 30px;
+
+  }
+
+  .price {
+    font-size: 18px;
+    padding: 15px;
+    font-weight: bold;
+    color: black;
+  }
+
+  .hinzugefügt {
+    background-color: green;
+  }
+
+  .indpadding {
+    padding: 5px;
+  }
