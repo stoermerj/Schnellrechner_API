@@ -17,8 +17,9 @@
 
     //shows if product has a vsh eigenschaden
     function showVshEigenschaden() {
-      let findList = document.getElementById("vhEigenschaden");
-      if ((document.getElementById('produktAuswahlListe').value == "IT") || (document.getElementById('produktAuswahlListe').value == "MAC")) {
+      const findList = document.getElementById("vhEigenschaden");
+      const produktAuswahlListeValue = document.getElementById('produktAuswahlListe').value;
+      if (produktAuswahlListeValue == "IT" || produktAuswahlListeValue == "MAC") {
         findList.style.display = "block";
       } else {
         findList.style.display = "none";
@@ -27,7 +28,7 @@
 
     //shows if product has DOinterimsmanager 
     function showDoInterimsmanager() {
-      let findList = document.getElementById("doInterimsmanagerconsult");
+      const findList = document.getElementById("doInterimsmanagerconsult");
       if (document.getElementById('produktAuswahlListe').value == "MAN") {
         findList.style.display = "block";
       } else {
@@ -37,7 +38,7 @@
 
     //shows the VS Box for DO
     function addDoInterimsmanagerVS() {
-      let findModul = document.getElementById("zusatzInterimsmanager");
+      const findModul = document.getElementById("zusatzInterimsmanager");
       if (document.getElementById("doInterimsmanagerJa").checked) {
         findModul.style.display = "block";
       } else {
@@ -47,7 +48,7 @@
 
     //provides user option if/he she wants additional modules
     function addModules() {
-      let findModul = document.getElementById("zusatzModuleList");
+      const findModul = document.getElementById("zusatzModuleList");
       if (document.getElementById("zusatzModuleJa").checked) {
         findModul.style.display = "block";
       } else if (document.getElementById("zusatzModuleNein").checked) {
@@ -57,28 +58,34 @@
 
     //checked bhvmodul
     function bhvCheck() {
+      const findModul = document.getElementById('zusatzModulBhv');
+      
       if (document.getElementById('bhvModul').checked) {
-        document.getElementById('zusatzModulBhv').style.display = "block";
-      } else if (document.getElementById('bhvModul').checked == false) {
-        document.getElementById('zusatzModulBhv').style.display = "none";
+        findModul.style.display = "block";
+      } else {
+        findModul.style.display = "none";
       }
     }
 
     //checked sachCheck
     function sachCheck() {
+      const zusatzModulSach = document.getElementById('zusatzModulSach');
+      
       if (document.getElementById('sachModul').checked) {
-        document.getElementById('zusatzModulSach').style.display = "block";
-      } else if (document.getElementById('sachModul').checked == false) {
-        document.getElementById('zusatzModulSach').style.display = "none";
+        zusatzModulSach.style.display = "block";
+      } else {
+        zusatzModulSach.style.display = "none";
       }
     }
 
     //checked cyberCheck
     function cyberCheck() {
+      const zusatzModulCyber = document.getElementById('zusatzModulCyber');
+      
       if (document.getElementById('cyberModul').checked) {
-        document.getElementById('zusatzModulCyber').style.display = "block";
-      } else if (document.getElementById('cyberModul').checked == false) {
-        document.getElementById('zusatzModulCyber').style.display = "none";
+        zusatzModulCyber.style.display = "block";
+      } else {
+        zusatzModulCyber.style.display = "none";
       }
     }
 
@@ -93,99 +100,121 @@
 
         //pushes NET IT vsh eigenschaden into API
         function addVshEigenschaden() {
-          if (document.getElementById("vshEigenschaedenJa").checked && document.getElementById('produktAuswahlListe').value == "IT") { return "Ja"; }
-          else if (document.getElementById("vshEigenschaedenNein").checked) { return "Nein"; }
+          if (document.getElementById("vshEigenschaedenJa").checked && document.getElementById('produktAuswahlListe').value == "IT") { 
+            return "Ja"; 
+          } else if (document.getElementById("vshEigenschaedenNein").checked) { 
+            return "Nein"; 
+          }
         }
 
         //pushes Marketing & Advertising berufshaftpflich
         function addVshBerufshaftpflicht() {
-          if (document.getElementById("vshEigenschaedenJa").checked && document.getElementById('produktAuswahlListe').value == "MAC") { return "Ja"; }
-          else if (document.getElementById("vshEigenschaedenNein").checked) { return "Nein"; }
+          if (document.getElementById("vshEigenschaedenJa").checked && document.getElementById('produktAuswahlListe').value == "MAC") { 
+            return "Ja"; 
+          } else if (document.getElementById("vshEigenschaedenNein").checked) { 
+            return "Nein"; 
+          }
         }
 
         //consult D&O into API
         function doInterimsmanager() {
+          const doInterinsmanagerAuswahlValue = parseInt(document.getElementById("doInterinsmanagerAuswahl").value);
+          
           if (document.getElementById("doInterimsmanagerJa").checked) {
-            if (document.getElementById("doInterinsmanagerAuswahl").value > 0) {
-              return document.getElementById("doInterinsmanagerAuswahl").value
+            if (doInterinsmanagerAuswahl > 0) {
+              return doInterinsmanagerAuswahl;
             }
-            else if (parseInt(document.getElementById("doInterinsmanagerAuswahl").value) > document.getElementById("versicherungssumme").value || parseInt(document.getElementById("doInterinsmanagerAuswahl").value) > 500000) {
+            else if (doInterinsmanagerAuswahlValue > document.getElementById("versicherungssumme").value || doInterinsmanagerAuswahlValue > 500000) {
               errorMessage(document.getElementById("zusatzInterimsmanager"));
+            } else { 
+              return "x" 
             }
-            else { return "x" }
           }
         }
 
         //defines the API input for the Betriebshaftpflicht Module
-        let bhvModule = function () {
-          let bhvValue = document.getElementById('bhvInputVs').value
-          if (parseInt(bhvValue) > 0 && parseInt(bhvValue) <= 3000000) {
+        const bhvModule = function () {
+          const bhvValue = parseInt(document.getElementById('bhvInputVs').value);
+          
+          if (bhvValue > 0 && bhvValue <= 3000000) {
             return "3000000";
           }
-          else if (parseInt(bhvValue) > 3000000 && parseInt(bhvValue) <= 5000000) {
+          else if (bhvValue > 3000000 && bhvValue <= 5000000) {
             return "5000000";
           }
-          else if (parseInt(bhvValue) > 5000000 && parseInt(bhvValue) <= 10000000) {
+          else if (bhvValue > 5000000 && bhvValue <= 10000000) {
             return "10000000";
           }
-          else if (parseInt(bhvValue) > 10000000) {
+          else if (bhvValue> 10000000) {
             errorMessage(document.getElementById('zusatzModulCyber'));
           }
-          else { return "x"; }
+          else { 
+            return "x"; 
+          }
         }
 
         //defines the API input for the Sach Module
-        let sachModule = function () {
-          let sachValue = document.getElementById('sachInputVs').value
+        const sachModule = function () {
+          const sachValue = parseInt(document.getElementById('sachInputVs').value);
+          
           if (document.getElementById('produktAuswahlListe').value === "IT" && parseInt(document.getElementById('jahresumsatz').value) <= 250000) {
             return moduleExceptions(document.getElementById('sachInputVs').value);
           }
           else {
-            if (parseInt(sachValue) > 0 && parseInt(sachValue) <= 25000) {
+            if (sachValue > 0 && sachValue <= 25000) {
               return "25000";
             }
-            else if (parseInt(sachValue) > 25000 && parseInt(sachValue) <= 50000) {
+            else if (sachValue > 25000 && sachValue <= 50000) {
               return "50000";
             }
-            else if (parseInt(sachValue) > 50000 && parseInt(sachValue) <= 75000) {
+            else if (sachValue > 50000 && sachValue <= 75000) {
               return "75000";
             }
-            else if (parseInt(sachValue) > 75000) {
+            else if (sachValue > 75000) {
               errorMessage(document.getElementById('zusatzModulSach'));
             }
-            else { return "x"; }
+            else { 
+              return "x"; 
+            }
           }
         }
 
         //defines the API input for the Cyber Module 
-        let cyberModule = function () {
-          let errorMessageCyber = document.getElementById('zusatzModulCyber');
-          let cyberValue = document.getElementById('cyberInputVs').value
-          if (parseInt(cyberValue) <= 250000) {
+        const cyberModule = function () {
+          const errorMessageCyber = document.getElementById('zusatzModulCyber');
+          const cyberValue = parseInt(document.getElementById('cyberInputVs').value);
+          
+          if (cyberValue <= 250000) {
             if (document.getElementById('produktAuswahlListe').value === "IT" && parseInt(document.getElementById('jahresumsatz').value) <= 250000) {
-              if (parseInt(cyberValue) <= 100000) {
+              if (cyberValue <= 100000) {
                 return "100000";
               }
-              else if (parseInt(cyberValue) > 100000) {
+              else if (cyberValue > 100000) {
                 console.log("this doesn't work");
                 errorMessage(errorMessageCyber);
                 return "x";
               }
             }
-            else { return "250000" };
+            else { 
+              return "250000" 
+            };
           }
-          else if (parseInt(cyberValue) > 250000) {
+          else if (cyberValue > 250000) {
             errorMessage(errorMessageCyber);
           }
-          else { return "x" }
+          else { 
+            return "x" 
+          }
         }
 
         //if NET IT is small for Sach
-        let moduleExceptions = function (e) {
-          if (parseInt(e) > 0 && parseInt(e) <= 15000) {
+        const moduleExceptions = function (e) {
+          const value = parseInt(e);
+          
+          if (value > 0 && value <= 15000) {
             return "15000";
           }
-          else if (parseInt(e) > 15000 && parseInt(e) <= 25000) {
+          else if (value > 15000 && value <= 25000) {
             return "25000";
           }
           else {
@@ -195,49 +224,44 @@
         }
 
         //addons for cyber + sach
-        let moduleAddonsCyber = function () {
+        const moduleAddonsCyber = function () {
           if (document.getElementById("cyberInputZusatzModul").checked) {
             return "Ja";
-          } else if ((document.getElementById("cyberInputZusatzModul").checked) = false) {
-            return "Nein";
-          }
+          } 
+          return "Nein";
         }
         let moduleAddonsSachBetriebsunterbrechung = function () {
           if (document.getElementById("sachInputZusatzBetriebsunterbrecung").checked) {
             return "Ja";
-          } else if ((document.getElementById("sachInputZusatzBetriebsunterbrecung").checked) = false) {
-            return "Nein";
           }
+          return "Nein";
         }
         let moduleAddonsSachGlas = function () {
           if (document.getElementById("sachInputZusatzGlas").checked) {
             return "Ja";
-          } else if ((document.getElementById("sachInputZusatzGlas").checked) = false) {
-            return "Nein";
           }
+          return "Nein";
         }
 
         //creates error messages. Missing: Clear everything once submit is hit
-        let errorMessage = function (e) {
-          if (document.getElementById("error") == null) {
+        const errorMessage = function (e) {
+          if (!document.getElementById("error")) {
             e.insertAdjacentHTML('afterend', '<span id="error" class="row alert alert-danger">Ihre Versicherungssumme ist zu hoch!</span>');
           }
         }
 
         //add thumpsup once button is toggled or checked - ERROR
         function togglelike(e) {
-          let element = document.getElementById("e");
-          element.classList.toggle("hinzugefügt");
+          document.getElementById(e).classList.toggle("hinzugefügt");
         }
 
         //doesn't fire form as is standard
-        const myForm = document.getElementById("myForm");
-        myForm.addEventListener("submit", function (e) {
+        document.getElementById("myForm").addEventListener("submit", function (e) {
           e.preventDefault();
         })
 
         const url = 'https://eppp2.antragsmodelle-hiscox.de/api/eppp/v1/calculate';
-        let data = [{
+        const data = {
           "auth_user": "", //enter Authentification
           "auth_apikey": "", //enter Password
           "product_code": document.getElementById('produktAuswahlListe').value,
@@ -252,29 +276,29 @@
           "sach_addon_glasversicherung": moduleAddonsSachGlas(),
           "cyber_module": cyberModule(),
           "cyber_addon_betriebsunterbrechung": moduleAddonsCyber(),
+        }
 
-        }]
-
-        let fetchData = {
+        fetch(url, {
           mode: 'cors',
           method: 'POST',
-          body: JSON.stringify(data[0]),
+          body: JSON.stringify(data),
           headers: {
             "Accept": "application/json, text/javascript, */*; q=0.01",
             "Content-Type": "application/json",
           }
-        }
-        fetch(url, fetchData)
-
+        })
           .then(response => response.json())
-          .then(data => {
-            if (JSON.stringify(data.data.totals.price_net) == 0 || JSON.stringify(data.data.totals.price_gross) == 0) {
-              document.getElementById('netto').innerHTML = "There was an error";
-              document.getElementById('brutto').innerHTML = "There was an error";
+          .then(json => {
+            const netto = document.getElementById('netto');
+            const brutto = document.getElementById('brutto');
+          
+            if (JSON.stringify(json.data.totals.price_net) == 0 || JSON.stringify(json.data.totals.price_gross) == 0) {
+              netto.innerHTML = "There was an error";
+              brutto.innerHTML = "There was an error";
             }
             else {
-              document.getElementById('netto').innerHTML = JSON.stringify(data.data.totals.price_net);
-              document.getElementById('brutto').innerHTML = JSON.stringify(data.data.totals.price_gross);
+              netto.innerHTML = JSON.stringify(json.data.totals.price_net);
+              brutto.innerHTML = JSON.stringify(json.data.totals.price_gross);
             }
           })
       }
